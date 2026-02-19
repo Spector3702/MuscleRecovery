@@ -83,6 +83,11 @@ After training multiple decision trees:
     * Feature rank within tree
 This identifies the most robust and informative frequency-channel combinations.
 
+## To Do
+* visualize data
+* reproduce outcomes in paper
+* try to improve performance
+
 ## Reference
 * [original paper](https://www.researchgate.net/publication/387495516_A_Methodology_to_Rank_Importance_of_Frequencies_and_Channels_in_Electromyography_Data_with_Decision_Tree_Classifiers)
 * [Github](https://github.com/Slauva/Ranking-frequencies-and-channels-of-EMG)
