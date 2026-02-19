@@ -30,31 +30,39 @@ participants.csv — study group description
 ```
 
 ### participants.csv
-	ID	Gender	Age	Handiness
-0	1	Male	22	right
-1	2	Female	21	right
-2	3	Male	21	right
-3	4	Male	22	right
-4	5	Male	21	right
+
+| ID | Gender | Age | Handiness |
+|----|--------|-----|-----------|
+| 1 | Male | 22 | right |
+| 2 | Female | 21 | right |
+| 3 | Male | 21 | right |
+| 4 | Male | 22 | right |
+| 5 | Male | 21 | right |
 
 ### exp_*.csv
-	time	emg1	emg2	emg3
-0	0.033366	2.976044	1.189451	0.400513
-1	0.049346	1.521465	0.469817	0.190989
-2	0.056792	1.521465	0.469817	0.190989
-3	0.061424	1.521465	0.469817	0.190989
-4	0.061567	1.521465	0.469817	0.190989
+
+| time | emg1 | emg2 | emg3 |
+|------|------|------|------|
+| 0.033366 | 2.976044 | 1.189451 | 0.400513 |
+| 0.049346 | 1.521465 | 0.469817 | 0.190989 |
+| 0.056792 | 1.521465 | 0.469817 | 0.190989 |
+| 0.061424 | 1.521465 | 0.469817 | 0.190989 |
+| 0.061567 | 1.521465 | 0.469817 | 0.190989 |
+
 * Sampling rate: 1000 Hz
 * Each row represents one sample (1 ms resolution)
 * emg1–emg3 correspond to three electrodes placed on vastus lateralis
 
 ### exp_*_points.json
-	baseline	close_0	open_0	close_1	open_1	close_2	open_2
-data/1/10min/exp_1_points.json	5.194982	5.194987	8.215003	11.127866	14.157181	17.079057	20.108287
-data/1/10min/exp_2_points.json	5.205411	5.205415	8.236081	11.158928	14.188139	17.100311	20.129508
-data/1/10min/exp_3_points.json	5.203765	5.203770	8.234359	11.157408	14.175607	17.087606	20.106401
-data/1/1min/exp_1_points.json	5.191146	5.191150	8.220996	11.144419	14.173022	17.085436	20.114560
-data/1/1min/exp_2_points.json	5.205699	5.205703	8.235017	11.157987	14.187257	17.109618	20.139184
+
+| File | baseline | close_0 | open_0 | close_1 | open_1 | close_2 | open_2 |
+|------|----------|---------|--------|---------|--------|---------|--------|
+| data/1/10min/exp_1_points.json | 5.194982 | 5.194987 | 8.215003 | 11.127866 | 14.157181 | 17.079057 | 20.108287 |
+| data/1/10min/exp_2_points.json | 5.205411 | 5.205415 | 8.236081 | 11.158928 | 14.188139 | 17.100311 | 20.129508 |
+| data/1/10min/exp_3_points.json | 5.203765 | 5.203770 | 8.234359 | 11.157408 | 14.175607 | 17.087606 | 20.106401 |
+| data/1/1min/exp_1_points.json | 5.191146 | 5.191150 | 8.220996 | 11.144419 | 14.173022 | 17.085436 | 20.114560 |
+| data/1/1min/exp_2_points.json | 5.205699 | 5.205703 | 8.235017 | 11.157987 | 14.187257 | 17.109618 | 20.139184 |
+
 * `close_*` = squat start
 * `open_*` = stand start
 
@@ -87,6 +95,8 @@ This identifies the most robust and informative frequency-channel combinations.
 * visualize data
 * reproduce outcomes in paper
 * try to improve performance
+    * try other classifier (spike-based PSTH is not applicable, but event-aligned time bin features can be explored.)
+    * Apply PCA for dimensionality reduction
 
 ## Reference
 * [original paper](https://www.researchgate.net/publication/387495516_A_Methodology_to_Rank_Importance_of_Frequencies_and_Channels_in_Electromyography_Data_with_Decision_Tree_Classifiers)
