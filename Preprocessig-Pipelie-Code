@@ -4,7 +4,9 @@ import json
 import pandas as pd
 from pathlib import Path
 from collections import defaultdict
-
+##
+##2.2.2. Data preprocessing
+##
 # Get data path (uses path from above)
 data_path = Path(path)
 
