@@ -1,2 +1,38 @@
+###Getting what we need
+import os
+import json
+import pandas as pd
+from pathlib import Path
+from collections import defaultdict
 
+# Get data path (uses path from above)
+data_path = Path(path)
 
+# Collect all csv and json files
+all_files = []
+for ext in ['*.csv', '*.json']:
+    all_files.extend(data_path.rglob(ext))
+
+# Group by file type (by filename pattern)
+file_groups = defaultdict(list)
+for f in sorted(all_files):
+    rel_path = f.relative_to(data_path)
+    if rel_path.name == 'participants.csv':
+        file_groups['participants.csv'].append(str(rel_path))
+    elif rel_path.name.endswith('_points.json'):
+        file_groups['exp_*_points.json'].append(str(rel_path))
+    elif rel_path.name.startswith('exp_') and rel_path.name.endswith('.csv'):
+        file_groups['exp_*.csv'].append(str(rel_path))
+
+print("=" * 60)
+print("Dataset File Overview")
+print("=" * 60)
+for file_type, paths in sorted(file_groups.items()):
+    print(f"\n[{file_type}] {len(paths)} file(s)")
+    if len(paths) <= 5:
+        for p in paths:
+            print(f"  - {p}")
+    else:
+        for p in paths[:3]:
+            print(f"  - {p}")
+        print(f"  ... and {len(paths)-3} more")
