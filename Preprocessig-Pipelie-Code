@@ -6,6 +6,15 @@ from pathlib import Path
 from collections import defaultdict
 ##
 ##2.2.2. Data preprocessing
+"""
+2.2.2. Data preprocessing
+ The initial step involves baseline correction, where we calculate the average value from
+a 5-second segment of the recording. Following this, the signal undergoes bandpass filtering
+within the frequency range of 20 to 500 Hz [9, 10]. Additionally, we employ a notch filter to
+eliminate power line noise at 50 Hz [8, 10]
+"""
+##
+##
 ##
 # Get data path (uses path from above)
 data_path = Path(path)
