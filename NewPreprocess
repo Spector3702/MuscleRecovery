@@ -17,11 +17,16 @@ import johnpork
 import warnings
 warnings.filterwarnings('ignore')
 
-##OBJECTIVE
+##OBJECTIVE###
+##OBJECTIVE###
+##OBJECTIVE###
 """Upon obtaining the experimental sample data, we perform preprocessing on the EMG
-signals. The initial step involves baseline correction, where we calculate the average value from
-a 5-second segment of the recording. Following this, the signal undergoes bandpass filtering
-within the frequency range of 20 to 500 Hz [9, 10]. Additionally, we employ a notch filter to
+signals. 
+1) The initial step involves baseline correction, where we calculate the average value from
+a 5-second segment of the recording. 
+2) Following this, the signal undergoes bandpass filtering
+within the frequency range of 20 to 500 Hz [9, 10]. 
+3) Additionally, we employ a notch filter to
 eliminate power line noise at 50 Hz [8, 10]."""
 
 def preprocessing(
@@ -39,7 +44,8 @@ def preprocessing(
     data = y.copy()
     interval = t.copy()
 
-    # Baseline Correction
+    """1) The initial step involves baseline correction, where we calculate the average value from
+a 5-second segment of the recording, we may experiment with changing 5 seconds to 2.5 & 7.5 """
     if t_baseline is not None:
         baseline_idx = np.argwhere(t >= t_baseline)[0][0]
         baseline = data[:baseline_idx]
@@ -54,6 +60,9 @@ def preprocessing(
         data = data[baseline_idx:]
         interval = interval[baseline_idx:]
 
+
+    """2) Following this, the signal undergoes bandpass filtering
+within the frequency range of 20 to 500 Hz [9, 10]."""
     # Band-pass Filter
     if l_band is not None and h_band is not None:
         high = h_band / (sfreq / 2)
@@ -71,6 +80,12 @@ def preprocessing(
         data = filtfilt(b, a, data)
 
     # Notch Filter
+    # In Europe its different is 50Hz
+    # In USA its 60Hz
+    #we use 50Hz
+
+    """3) Additionally, we employ a notch filter to
+eliminate power line noise at 50 Hz [8, 10]."""
     if notch in [50, 60]:
         b, a = iirnotch(notch, 30.0, sfreq)
 
@@ -126,17 +141,18 @@ def load_data(filepath: str, channel: int, show: bool = False):
                     alpha=0.3,
                 )
         plt.xlabel("Time (seconds)")
-        plt.ylabel("Amplitude (voltes)")
+        plt.ylabel("Amplitude (volts)")
         plt.legend()
         plt.grid(linewidth=1, linestyle="--", alpha=0.7)
         plt.show()
     return time, data
 
 
+""
 ### PLOTTING DATA###
 ### PLOTTING DATA###
 ### PLOTTING DATA###
-
+""
 
 fig, axes = plt.subplots(1, 3, figsize=(23, 6))
 
@@ -150,6 +166,6 @@ for k, cls in enumerate(["1min", "5min", "10min"]):
     axes[k].set_title(cls)
     axes[k].bar(exp, powers)
     axes[k].set_xlabel("Record number")
-    axes[k].set_ylabel("Power")
+    axes[k].set_ylabel("John Pork Power")
 
 plt.savefig("compare_powers_v1.png")
