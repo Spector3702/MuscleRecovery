@@ -17,7 +17,7 @@ eliminate power line noise at 50 Hz [8, 10]
 ##
 ##
 # Get data path (uses path from above)
-data_path = Path(path)
+data_path = Path(Spector3702/MuscleRecovery/7)
 
 # Collect all csv and json files
 all_files = []
