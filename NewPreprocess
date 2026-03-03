@@ -12,7 +12,7 @@ import multiprocessing
 #import johnpork
 import json
 from typing import *
-
+#import config
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -227,9 +227,10 @@ def data_prepare(
 
     return time, data_envelope, points
 
-    ###poeifwjewrogogwo
+###poeifwjewrogogwo
+##Connfig
 
-    def analyze_data(folderpath: str, count: int, channel: int, show: bool = False):
+def analyze_data(folderpath: str, count: int, channel: int, show: bool = False):
     rms = []
     total = []
     for exp in range(count):
@@ -293,3 +294,9 @@ def data_prepare(
     plt.bar(np.arange(count) + 1, total, label="Simps")
     plt.legend()
     plt.show()
+
+
+##CODE_TO_RUN
+analyze_data("../data/rest_time/1min", 5, 0, show=True)
+analyze_data("../data/rest_time/5min", 5, 0, show=True)
+analyze_data("../data/rest_time/10min", 5, 0, show=True)
