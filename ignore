@@ -1,0 +1,152 @@
+###Getting what we need
+import os
+import json
+import pandas as pd
+from pathlib import Path
+from collections import defaultdict
+##
+##2.2.2. Data preprocessing
+"""
+2.2.2. Data preprocessing
+ The initial step involves baseline correction, where we calculate the average value from
+a 5-second segment of the recording. Following this, the signal undergoes bandpass filtering
+within the frequency range of 20 to 500 Hz [9, 10]. Additionally, we employ a notch filter to
+eliminate power line noise at 50 Hz [8, 10]
+"""
+##
+##
+##
+# Get data path (uses path from above)
+data_path = Path(Spector3702/MuscleRecovery/7)
+
+# Collect all csv and json files
+all_files = []
+for ext in ['*.csv', '*.json']:
+    all_files.extend(data_path.rglob(ext))
+
+# Group by file type (by filename pattern)
+file_groups = defaultdict(list)
+for f in sorted(all_files):
+    rel_path = f.relative_to(data_path)
+    if rel_path.name == 'participants.csv':
+        file_groups['participants.csv'].append(str(rel_path))
+    elif rel_path.name.endswith('_points.json'):
+        file_groups['exp_*_points.json'].append(str(rel_path))
+    elif rel_path.name.startswith('exp_') and rel_path.name.endswith('.csv'):
+        file_groups['exp_*.csv'].append(str(rel_path))
+
+print("=" * 60)
+print("Dataset File Overview")
+print("=" * 60)
+for file_type, paths in sorted(file_groups.items()):
+    print(f"\n[{file_type}] {len(paths)} file(s)")
+    if len(paths) <= 5:
+        for p in paths:
+            print(f"  - {p}")
+    else:
+        for p in paths[:3]:
+            print(f"  - {p}")
+        print(f"  ... and {len(paths)-3} more")
+
+
+
+
+
+
+
+################
+################
+import numpy as np
+from scipy.signal import butter, filtfilt, iirnotch
+##What ChatGPT said
+def baseline_correction(emg: np.ndarray, fs: float, baseline_seconds: float = 5.0,
+                        baseline_start_sec: float = 0.0) -> np.ndarray:
+    """
+    Subtract mean of a baseline segment (default: first 5 seconds).
+    emg shape: (n_samples,) or (n_samples, n_channels)
+    """
+    emg = np.asarray(emg)
+    if emg.ndim == 1:
+        emg = emg[:, None]  # -> (n_samples, 1)
+
+    start = int(round(baseline_start_sec * fs))
+    stop = int(round((baseline_start_sec + baseline_seconds) * fs))
+
+    if stop > emg.shape[0]:
+        raise ValueError(
+            f"Baseline window [{baseline_start_sec}, {baseline_start_sec+baseline_seconds}]s "
+            f"exceeds signal length {emg.shape[0]/fs:.2f}s."
+        )
+
+    baseline_mean = np.mean(emg[start:stop, :], axis=0, keepdims=True)
+    corrected = emg - baseline_mean
+    return corrected if corrected.shape[1] > 1 else corrected[:, 0]
+
+
+def butter_bandpass_filter(emg: np.ndarray, fs: float, lowcut: float = 20.0,
+                           highcut: float = 500.0, order: int = 4) -> np.ndarray:
+    """
+    Zero-phase Butterworth bandpass using filtfilt.
+    """
+    emg = np.asarray(emg)
+    if emg.ndim == 1:
+        emg = emg[:, None]
+
+    nyq = 0.5 * fs
+    if highcut >= nyq:
+        raise ValueError(f"highcut ({highcut} Hz) must be < Nyquist ({nyq} Hz).")
+
+    low = lowcut / nyq
+    high = highcut / nyq
+    b, a = butter(order, [low, high], btype="bandpass")
+    filtered = filtfilt(b, a, emg, axis=0)
+    return filtered if filtered.shape[1] > 1 else filtered[:, 0]
+
+
+def notch_filter(emg: np.ndarray, fs: float, notch_freq: float = 50.0,
+                 q: float = 30.0) -> np.ndarray:
+    """
+    IIR notch filter at notch_freq (default: 50 Hz). Zero-phase via filtfilt.
+    Q controls notch sharpness (higher = narrower).
+    """
+    emg = np.asarray(emg)
+    if emg.ndim == 1:
+        emg = emg[:, None]
+
+    nyq = 0.5 * fs
+    w0 = notch_freq / nyq
+    if not (0 < w0 < 1):
+        raise ValueError(f"notch_freq ({notch_freq} Hz) must be between 0 and Nyquist ({nyq} Hz).")
+
+    b, a = iirnotch(w0=w0, Q=q)
+    filtered = filtfilt(b, a, emg, axis=0)
+    return filtered if filtered.shape[1] > 1 else filtered[:, 0]
+
+
+def preprocess_emg(emg: np.ndarray, fs: float,
+                   baseline_seconds: float = 5.0,
+                   bandpass_low: float = 20.0,
+                   bandpass_high: float = 500.0,
+                   notch_freq: float = 50.0,
+                   notch_q: float = 30.0,
+                   order: int = 4) -> np.ndarray:
+    """
+    Full pipeline:
+      1) Baseline correction (mean over first 5 seconds by default)
+      2) Bandpass 20-500 Hz
+      3) Notch at 50 Hz
+    """
+    x = baseline_correction(emg, fs, baseline_seconds=baseline_seconds)
+    x = butter_bandpass_filter(x, fs, lowcut=bandpass_low, highcut=bandpass_high, order=order)
+    x = notch_filter(x, fs, notch_freq=notch_freq, q=notch_q)
+    return x
+
+
+# -------------------- Example usage --------------------
+if __name__ == "__main__":
+    fs = 2000.0  # Hz (example sampling rate)
+    # emg could be (n_samples,) for single channel or (n_samples, n_channels) for multi-channel
+    emg = np.random.randn(int(30 * fs), 8)  # 30 seconds, 8 channels (fake data)
+
+    emg_clean = preprocess_emg(emg, fs)
+    print(emg_clean.shape)  # (n_samples, 8)
