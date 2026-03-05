@@ -3,6 +3,18 @@ This project investigates muscle recovery using surface electromyography (EMG) r
 
 The dataset contains raw EMG time-domain signals along with event annotations marking squat and stand periods.
 
+## Quickstart
+
+Run the notebooks in order. Steps 1–2 are optional if you already have the preprocessed data.
+
+| Step | Notebook | Description |
+|------|----------|-------------|
+| 1 *(optional)* | `data.ipynb` | Download the EMG muscle recovery dataset from Kaggle via `kagglehub`, and preview the raw data structure. |
+| 2 *(optional)* | `preprocessing.ipynb` | Apply the full signal processing pipeline (baseline correction, bandpass/notch filters, segmentation, PSD extraction) and produce `dataset_filtered_1_450.csv` & `dataset_filtered_bands.csv`. |
+| 3 | `decision_tree.ipynb` | Train CART decision trees with grid search and MCCV to classify rest intervals (1/5/10 min), and rank frequency bands by importance. |
+| 4 | `psth_classifier.ipynb` | Classify rest intervals using event-aligned PSD features with PCA and an Euclidean-distance-based classifier (PSTH-style approach). |
+| 5 | `rbf_svm.ipynb` | Classify rest intervals using RBF kernel SVM with PCA dimensionality reduction, tuned via grid search and MCCV. |
+
 ## Experimental Design
 * Each participant completed three experimental blocks corresponding to different rest intervals:
     * 1-minute rest
@@ -90,13 +102,6 @@ After training multiple decision trees:
     * Tree rank
     * Feature rank within tree
 This identifies the most robust and informative frequency-channel combinations.
-
-## To Do
-* visualize data
-* reproduce outcomes in paper
-* try to improve performance
-    * try other classifier (spike-based PSTH is not applicable, but event-aligned time bin features can be explored.)
-    * Apply PCA for dimensionality reduction
 
 ## Reference
 * [original paper](https://www.researchgate.net/publication/387495516_A_Methodology_to_Rank_Importance_of_Frequencies_and_Channels_in_Electromyography_Data_with_Decision_Tree_Classifiers)
